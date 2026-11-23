@@ -6,6 +6,7 @@ import Marca from '../components/Marca';
 function Cadastro() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [confirmacaoSenha, setConfirmacaoSenha] = useState('');
     const [nomeDoNegocio, setNomeDoNegocio] = useState('');
     const [erro, setErro] = useState('');
     const [aguardandoConfirmacao, setAguardandoConfirmacao] = useState(false);
@@ -19,6 +20,10 @@ function Cadastro() {
         const nome = nomeDoNegocio.trim();
         if (!nome) {
             setErro('Informe o nome do negócio.');
+            return;
+        }
+        if (senha !== confirmacaoSenha) {
+            setErro('As senhas não coincidem. Confira e tente novamente.');
             return;
         }
 
@@ -39,6 +44,7 @@ function Cadastro() {
                 navigate('/painel');
             } else {
                 setSenha('');
+                setConfirmacaoSenha('');
                 setAguardandoConfirmacao(true);
             }
         } catch (error) {
@@ -97,6 +103,17 @@ function Cadastro() {
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
                         placeholder="Senha"
+                        autoComplete="new-password"
+                        required
+                    />
+                </label>
+                <label className="campo-formulario">
+                    Confirmar senha
+                    <input
+                        type="password"
+                        value={confirmacaoSenha}
+                        onChange={(e) => setConfirmacaoSenha(e.target.value)}
+                        placeholder="Confirme sua senha"
                         autoComplete="new-password"
                         required
                     />

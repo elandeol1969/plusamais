@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { formatarDuracao, formatarNumeroBrasileiro, normalizarDuracao, normalizarNumeroBrasileiro } from '../lib/numeros';
 
 function CadastroServico({ negocioId, aoSalvar }) {
     const [nome, setNome] = useState('');
@@ -66,8 +67,8 @@ function CadastroServico({ negocioId, aoSalvar }) {
     function editarServico(servico) {
         setServicoEditando(servico);
         setNome(servico.nome);
-        setDuracao(String(servico.duracao_minutos));
-        setPreco(String(servico.preco).replace('.', ','));
+        setDuracao(formatarDuracao(servico.duracao_minutos));
+        setPreco(formatarNumeroBrasileiro(servico.preco));
         setErro('');
         setMensagem('');
     }
@@ -107,12 +108,23 @@ function CadastroServico({ negocioId, aoSalvar }) {
             return;
         }
 
+        const duracaoNormalizada = normalizarDuracao(duracao);
+        const precoNormalizado = normalizarNumeroBrasileiro(preco);
+        if (duracaoNormalizada === null || Number(duracaoNormalizada) < 1 || Number(duracaoNormalizada) > 2147483647) {
+            setErro('Informe uma duração inteira entre 1 e 2.147.483.647 minutos, sem casas decimais.');
+            return;
+        }
+        if (precoNormalizado === null) {
+            setErro('Informe um preço não negativo com até duas casas decimais, por exemplo 1.500,00.');
+            return;
+        }
+
         setSalvando(true);
         try {
             const dados = {
                 nome: nomeServico,
-                duracao_minutos: Number(duracao),
-                preco: preco.replace(',', '.'),
+                duracao_minutos: duracaoNormalizada,
+                preco: precoNormalizado,
             };
             if (servicoEditando) {
                 const { data, error } = await supabase.from('servicos')
@@ -171,7 +183,7 @@ function CadastroServico({ negocioId, aoSalvar }) {
                             <li>
                                 <div>
                                     <strong>{servicoSelecionado.nome}</strong>
-                                    <p>{servicoSelecionado.duracao_minutos} minutos — R$ {servicoSelecionado.preco}</p>
+                                    <p>{formatarDuracao(servicoSelecionado.duracao_minutos)} minutos — R$ {formatarNumeroBrasileiro(servicoSelecionado.preco)}</p>
                                 </div>
                                 <div className="acoes-servico">
                                     <button type="button" className="botao-secundario" disabled={salvando || buscando} onClick={() => editarServico(servicoSelecionado)}>Editar</button>
@@ -192,12 +204,15 @@ function CadastroServico({ negocioId, aoSalvar }) {
             <label className="campo-formulario">
                 Duração (minutos)
                 <input
-                    type="number"
-                    min="1"
-                    max="2147483647"
-                    step="1"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Ex.: 1.440"
                     value={duracao}
                     onChange={(e) => setDuracao(e.target.value)}
+                    onBlur={() => {
+                        const valor = normalizarDuracao(duracao);
+                        if (valor !== null) setDuracao(formatarDuracao(valor));
+                    }}
                     required
                 />
             </label>
@@ -206,11 +221,13 @@ function CadastroServico({ negocioId, aoSalvar }) {
                 <input
                     type="text"
                     inputMode="decimal"
-                    pattern="[0-9]+([.,][0-9]{1,2})?"
-                    title="Informe um preço não negativo com até duas casas decimais."
-                    placeholder="Ex.: 35,50"
+                    placeholder="Ex.: 1.500,00"
                     value={preco}
                     onChange={(e) => setPreco(e.target.value)}
+                    onBlur={() => {
+                        const valor = normalizarNumeroBrasileiro(preco);
+                        if (valor !== null) setPreco(formatarNumeroBrasileiro(valor));
+                    }}
                     required
                 />
             </label>

@@ -7,14 +7,17 @@ Supabase para autenticação e armazenamento.
 ## Usando a aplicação
 
 1. Na tela de acesso, selecione **Criar conta** e informe o nome do negócio,
-   e-mail e senha. Se a confirmação de e-mail estiver habilitada, confirme o
-   endereço pela mensagem recebida e depois faça login.
+   e-mail e senha. Repita a senha no campo de confirmação. Se a confirmação de
+   e-mail estiver habilitada, confirme o endereço pela mensagem recebida e
+   depois faça login.
 2. No painel, selecione o negócio, caso sua conta tenha mais de um.
 3. Em **Cadastro de Clientes**, informe o nome e, opcionalmente, telefone e
    e-mail. O telefone deve seguir o formato `(XX) XXXXX-XXXX`. Use **Localizar
    clientes** para pesquisar, editar ou excluir um cadastro.
-4. Em **Cadastro de Serviços**, informe nome, duração em minutos e preço. Use
-   **Localizar serviços** e selecione um item da lista para editá-lo ou excluí-lo.
+4. Em **Cadastro de Serviços**, informe nome, duração em minutos inteiros e
+   preço. Os campos aceitam separador de milhar; o preço aceita até duas casas
+   decimais, por exemplo `1.440` minutos e `1.500,00` reais. Use **Localizar
+   serviços** e selecione um item da lista para editá-lo ou excluí-lo.
 5. Em **Novo Agendamento**, selecione um cliente e um serviço cadastrados,
    escolha data e hora e clique em **Agendar**. Na lista, use os ícones de lápis
    e lixeira para editar ou excluir um compromisso.
@@ -137,6 +140,11 @@ As duas funções de exclusão verificam a posse do negócio e removem os regist
 vinculados em uma transação. A terceira migração impede no banco novos horários
 passados, inclusive em chamadas que não passem pela interface; alterações que
 mantêm o horário original de um registro antigo continuam permitidas.
+
+A migração anterior de [duração decimal](./supabase/migrations/20261123000000_duracao_servico_decimal.sql)
+não é necessária para o formulário atual. Se já aplicada, não é preciso revertê-la:
+o formulário aceita somente minutos inteiros. Durações decimais já armazenadas
+continuam no banco e precisam ser ajustadas para um inteiro ao editar o serviço.
 
 As migrações não criam as tabelas, as políticas RLS ou os triggers de criação do
 negócio. Confirme sua aplicação no ambiente Supabase utilizado.
