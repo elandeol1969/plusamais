@@ -3,6 +3,10 @@ import { supabase } from '../lib/supabaseClient';
 import { atualizarAgendamento, criarAgendamento } from '../lib/agendamentos';
 import { horarioMinimoBrasilia, horarioUTCParaEntradaBrasilia } from '../lib/horario';
 
+function ordenarPorNome(itens) {
+    return [...itens].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+}
+
 function NovoAgendamento({ negocioId, aoSalvar, atualizacaoClientes, atualizacaoServicos, agendamento, aoCancelar }) {
     const [horarioInicial] = useState(() => agendamento ? horarioUTCParaEntradaBrasilia(agendamento.data_hora) : '');
     const [horarioMinimo, setHorarioMinimo] = useState(() => horarioMinimoBrasilia(!!agendamento));
@@ -34,7 +38,7 @@ function NovoAgendamento({ negocioId, aoSalvar, atualizacaoClientes, atualizacao
                 const { data, error } = await supabase.from('clientes').select().eq('negocio_id', negocioId);
                 if (error) throw error;
                 if (ativo) {
-                    setClientes(data);
+                    setClientes(ordenarPorNome(data));
                     setErroClientes('');
                 }
             } catch (error) {
@@ -50,7 +54,7 @@ function NovoAgendamento({ negocioId, aoSalvar, atualizacaoClientes, atualizacao
                 const { data, error } = await supabase.from('servicos').select().eq('negocio_id', negocioId);
                 if (error) throw error;
                 if (ativo) {
-                    setServicos(data);
+                    setServicos(ordenarPorNome(data));
                     setErroServicos('');
                 }
             } catch (error) {
