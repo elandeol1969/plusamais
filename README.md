@@ -87,9 +87,12 @@ node --test tests\horario.test.js
 
 `build` gera a versão de produção em `dist`; `preview` permite visualizá-la
 localmente após a compilação. O teste indicado verifica conversões e regras de
-horário. Para publicar a aplicação, configure o servidor para encaminhar as
-rotas da aplicação, como `/login`, `/cadastro` e `/painel`, para `index.html`,
-sem interferir na entrega dos arquivos estáticos.
+horário. Na Vercel, configure `agendaja` como diretório raiz do projeto e faça
+um novo deploy: o arquivo `vercel.json` encaminha `/login`, `/cadastro` e
+`/painel` para `index.html`, permitindo atualizar ou acessar essas páginas
+diretamente. Em outras hospedagens, configure o mesmo encaminhamento sem
+interferir na entrega dos arquivos estáticos. Ao adicionar novas rotas, inclua-as
+também nessa configuração.
 
 ## Configuração do Supabase
 
