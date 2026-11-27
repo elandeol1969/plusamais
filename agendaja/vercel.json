@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/login", "destination": "/index.html" },
     { "source": "/cadastro", "destination": "/index.html" },
+    { "source": "/redefinir-senha", "destination": "/index.html" },
     { "source": "/painel", "destination": "/index.html" }
   ]
 }
