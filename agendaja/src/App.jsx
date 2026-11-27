@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
+import RedefinirSenha from './pages/RedefinirSenha';
 import Painel from './pages/Painel';
 
 
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
         <Route path="/painel" element={<Painel />} />
       </Routes>
       <footer className="rodape">

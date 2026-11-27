@@ -7,6 +7,8 @@ function Login() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [erro, setErro] = useState('');
+    const [mensagem, setMensagem] = useState('');
+    const [enviandoRecuperacao, setEnviandoRecuperacao] = useState(false);
     const navigate = useNavigate();
 
     async function handleLogin(evento) {
@@ -23,6 +25,30 @@ function Login() {
             return;
         }
         navigate('/painel');
+    }
+
+    async function handleEsqueciSenha() {
+        setErro('');
+        setMensagem('');
+
+        const emailInformado = email.trim();
+        if (!emailInformado) {
+            setErro('Informe seu e-mail para recuperar a senha.');
+            return;
+        }
+
+        setEnviandoRecuperacao(true);
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(emailInformado, {
+                redirectTo: `${window.location.origin}/redefinir-senha`,
+            });
+            if (error) throw error;
+            setMensagem('Se houver uma conta com esse e-mail, enviaremos as instruções para redefinir a senha. Verifique também a pasta de spam.');
+        } catch (error) {
+            setErro(`Erro ao solicitar a recuperação de senha: ${error.message}`);
+        } finally {
+            setEnviandoRecuperacao(false);
+        }
     }
 
     return (
@@ -54,8 +80,17 @@ function Login() {
                         required
                     />
                 </label>
+                <button
+                    type="button"
+                    className="link-esqueci-senha"
+                    onClick={handleEsqueciSenha}
+                    disabled={enviandoRecuperacao}
+                >
+                    {enviandoRecuperacao ? 'Enviando...' : 'Esqueceu sua senha?'}
+                </button>
             </div>
             {erro && <p role="alert">{erro}</p>}
+            {mensagem && <p role="status">{mensagem}</p>}
             <button className="botao-primario" type="submit">Entrar</button>
             <Link className="link-acesso" to="/cadastro">Criar conta</Link>
         </form>
