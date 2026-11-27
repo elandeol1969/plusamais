@@ -220,10 +220,17 @@ function CadastroCliente({ negocioId, aoSalvar }) {
                 Nome do cliente
                 <input
                     type="text"
+                    maxLength={40}
+                    placeholder="Máximo de 40 caracteres"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required
                 />
+                {nome.length === 40 && (
+                    <small className="aviso-limite-caracteres" role="status">
+                        Limite de 40 caracteres atingido.
+                    </small>
+                )}
             </label>
             <label className="campo-formulario">
                 Telefone (opcional)
